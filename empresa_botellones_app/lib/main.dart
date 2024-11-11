@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'src/screens/login_screen.dart';
 import 'src/screens/register_screen.dart';
 import 'src/screens/splash_screen.dart'; // Importa la pantalla de carga
+import 'src/screens/pedido_screen.dart';
 
 class EmpresaBotellonesApp extends StatefulWidget {
   @override
@@ -38,6 +39,7 @@ class _EmpresaBotellonesAppState extends State<EmpresaBotellonesApp> {
         '/login': (context) => LoginScreen(onLogin: login),
         '/register': (context) => RegisterScreen(),
         '/home': (context) => HomeScreen(),
+        '/pedido': (context) => PedidoScreen()
       },
     );
   }

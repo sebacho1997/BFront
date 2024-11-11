@@ -1,48 +1,117 @@
 import 'package:flutter/material.dart';
 
-class PedidoScreen extends StatelessWidget {
-  final String tipoPedido;
+class PedidoScreen extends StatefulWidget {
+  @override
+  _PedidoScreenState createState() => _PedidoScreenState();
+}
 
-  PedidoScreen({required this.tipoPedido});
+class _PedidoScreenState extends State<PedidoScreen> {
+  String selectedPaymentMethod = ''; // Método de pago seleccionado
+  double totalAmount = 0.0; // Variable para almacenar el total a pagar
+
+  @override
+  void initState() {
+    super.initState();
+    _calculateTotal(); // Calcula el total al iniciar
+  }
+
+  void _calculateTotal() {
+    // Suma de los precios de los productos
+    setState(() {
+      totalAmount = 3.0 + 2.5; // Actualiza aquí los precios de los productos
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pedido de $tipoPedido'),
+        title: Text('Confirmar Pedido'),
+        centerTitle: true,
+        elevation: 0,
       ),
-      body: Padding(
+      body: Container(
+        color: Colors.grey[200],
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Has seleccionado: $tipoPedido',
-                style: TextStyle(fontSize: 24)),
+            Text(
+              'Has seleccionado:',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 20),
-            Text('Selecciona tu método de pago:'),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                // Aquí integraríamos el pago por QR
-                showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: Text('Pago por QR'),
-                    content: Text('El QR será escaneado en la entrega.'),
-                    actions: [
-                      TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('OK'))
-                    ],
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.local_drink, color: Colors.blue),
+                    title: Text('Botellón de Agua'),
+                    trailing: Text('\$3.00',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
-                );
-              },
-              child: Text('Pagar por QR'),
+                  ListTile(
+                    leading: Icon(Icons.ac_unit, color: Colors.blue),
+                    title: Text('Hielo 1kg'),
+                    trailing: Text('\$2.50',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            Divider(thickness: 1),
+            SizedBox(height: 10),
+            Text(
+              'Selecciona tu método de pago:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-            ElevatedButton(
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    selectedPaymentMethod == 'QR' ? Colors.blue : Colors.white,
+                foregroundColor:
+                    selectedPaymentMethod == 'QR' ? Colors.white : Colors.black,
+                padding: EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(color: Colors.blueAccent),
+                ),
+              ),
               onPressed: () {
-                // Confirmación de pago en efectivo
+                setState(() {
+                  selectedPaymentMethod = 'QR';
+                });
+                _showQRDialog(context);
+              },
+              icon: Icon(Icons.qr_code),
+              label: Text('Pagar por QR'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: selectedPaymentMethod == 'Efectivo'
+                    ? Colors.blueAccent
+                    : Colors.white,
+                foregroundColor: selectedPaymentMethod == 'Efectivo'
+                    ? Colors.white
+                    : Colors.black,
+                padding: EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(color: Colors.blueAccent),
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  selectedPaymentMethod = 'Efectivo';
+                });
                 showDialog(
                   context: context,
                   builder: (_) => AlertDialog(
@@ -56,18 +125,111 @@ class PedidoScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: Text('Pagar en Efectivo'),
+              icon: Icon(Icons.attach_money),
+              label: Text('Pagar en Efectivo'),
             ),
-            SizedBox(height: 30),
+            Spacer(),
+            Divider(thickness: 1),
+            SizedBox(height: 10),
+            // Total a pagar
+            Text(
+              'Total a pagar: \$${totalAmount.toStringAsFixed(2)}',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.right,
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                padding: EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Confirmar Pedido'),
+              child: Text(
+                'Confirmar Pedido',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showQRDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            bool paymentConfirmed = false;
+
+            Future.delayed(Duration(seconds: 2), () {
+              setState(() {
+                paymentConfirmed = true;
+              });
+            });
+
+            return AlertDialog(
+              title: Text('Escanea el QR para realizar el pago'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    "assets/qr.jpg", // Aquí va tu imagen de QR real
+                    width: 200,
+                    height: 200,
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        paymentConfirmed = !paymentConfirmed;
+                      });
+                      if (paymentConfirmed) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Pago confirmado exitosamente')),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Verificando pago...')),
+                        );
+                      }
+                    },
+                    child: Text(
+                      paymentConfirmed ? 'Pago confirmado' : 'Ya pagué',
+                      style: TextStyle(
+                        color: paymentConfirmed ? Colors.white : Colors.blue,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          paymentConfirmed ? Colors.green : Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Cerrar'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

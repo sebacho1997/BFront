@@ -4,7 +4,7 @@ import 'package:flutter/scheduler.dart';
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Redirige automáticamente al LoginScreen después de 3 segundos
+    // Redirige automáticamente al HomeScreen después de 3 segundos
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Future.delayed(Duration(seconds: 3), () {
         Navigator.of(context).pushReplacementNamed('/home');
@@ -12,21 +12,33 @@ class SplashScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: Colors.blue, // Color de fondo
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue, Colors.blueAccent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Stack(
+          fit: StackFit.expand, // Hace que el stack ocupe toda la pantalla
           children: [
             Image.asset(
-              'assets/logo.jpg', // Ruta de tu imagen
-              width: 200, // Ajusta el ancho según sea necesario
+              'assets/splash.jpg', // Ruta de tu imagen
+              fit:
+                  BoxFit.cover, // Ajusta la imagen para cubrir toda la pantalla
             ),
-            SizedBox(height: 20),
-            CircularProgressIndicator(), // Indicador de carga
-            SizedBox(height: 20),
-            Text(
-              'Cargando...',
-              style: TextStyle(fontSize: 24, color: Colors.white),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.white), // Color del indicador
+                  ),
+                  SizedBox(height: 20),
+                ],
+              ),
             ),
           ],
         ),

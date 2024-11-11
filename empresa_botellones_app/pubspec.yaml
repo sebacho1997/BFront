@@ -25,6 +25,8 @@ flutter:
 
   assets:
     - assets/logo.jpg  # Asegúrate de que esta ruta sea correcta
+    - assets/splash.jpg
+    - assets/qr.jpg
 
 flutter_icons:
   android: true
